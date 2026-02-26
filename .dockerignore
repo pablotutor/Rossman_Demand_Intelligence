@@ -1,0 +1,11 @@
+.venv/
+venv/
+data/
+.git/
+.gitignore
+README.md
+notebooks/
+__pycache__/
+*.pyc
+.DS_Store
+postgres_data/

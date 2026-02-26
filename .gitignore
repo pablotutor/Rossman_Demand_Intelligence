@@ -1,0 +1,24 @@
+# Entornos virtuales
+.venv/
+venv/
+env/
+
+# Datos (NUNCA subir CSVs o bases de datos a GitHub)
+data/
+*.csv
+*.db
+*.sqlite3
+
+# Archivos de Jupyter y Python
+.ipynb_checkpoints/
+__pycache__/
+*.pyc
+
+# Archivos de sistema operativo (Mac)
+.DS_Store
+
+# Variables de entorno / Secretos
+.env
+
+# Archivos de Docker locales (opcional pero recomendado)
+postgres_data/

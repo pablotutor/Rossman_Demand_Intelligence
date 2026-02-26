@@ -1,0 +1,46 @@
+services:
+  # 1. DATABASE
+  db:
+    image: postgres:15-alpine
+    container_name: forecast_db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: forecasting_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql # Ejecuta este script al arrancar
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d forecasting_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 2. API + ML
+  backend:
+    build: ./backend
+    container_name: forecast_backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://admin:password123@db:5432/forecasting_db
+    depends_on:
+      db:
+        condition: service_healthy # Espera a que la BD esté lista antes de arrancar
+
+  # 3. UI
+  frontend:
+    build: ./frontend
+    container_name: forecast_frontend
+    ports:
+      - "8501:8501"
+    environment:
+      - API_URL=http://backend:8000/predict
+    depends_on:
+      - backend
+
+# Declaramos el volumen para que los datos de Postgres no se borren al apagar Docker
+volumes:
+  postgres_data:
