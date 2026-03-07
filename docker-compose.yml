@@ -1,46 +1,24 @@
-services:
-  # 1. DATABASE
-  db:
-    image: postgres:15-alpine
-    container_name: forecast_db
-    environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: password123
-      POSTGRES_DB: forecasting_db
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql # Ejecuta este script al arrancar
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin -d forecasting_db"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+version: '3.8'
 
-  # 2. API + ML
+services:
   backend:
     build: ./backend
-    container_name: forecast_backend
+    container_name: rossmann_backend
     ports:
       - "8000:8000"
-    environment:
-      - DATABASE_URL=postgresql://admin:password123@db:5432/forecasting_db
-    depends_on:
-      db:
-        condition: service_healthy # Espera a que la BD esté lista antes de arrancar
+    volumes:
+      - ./backend:/app  # Sincroniza tus archivos locales con el contenedor
 
-  # 3. UI
   frontend:
     build: ./frontend
-    container_name: forecast_frontend
+    container_name: rossmann_frontend
     ports:
       - "8501:8501"
     environment:
-      - API_URL=http://backend:8000/predict
+      - API_URL=http://backend:8000/predict  # El frontend llama al backend por su nombre interno
+      - DB_PATH=/backend/rossmann.db         # Ruta a la base de datos dentro del contenedor
+    volumes:
+      - ./frontend:/app
+      - ./backend:/backend  # Le damos acceso de lectura al frontend a la base de datos del backend
     depends_on:
       - backend
-
-# Declaramos el volumen para que los datos de Postgres no se borren al apagar Docker
-volumes:
-  postgres_data:

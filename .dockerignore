@@ -9,3 +9,4 @@ __pycache__/
 *.pyc
 .DS_Store
 postgres_data/
+requirements-dev.txt

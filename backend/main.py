@@ -15,7 +15,7 @@ app = FastAPI(
 
 # 1. LOAD MODELS
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-MODEL_DIR = os.path.abspath(os.path.join(BASE_DIR, '..', 'backend/models'))
+MODEL_DIR = os.path.abspath(os.path.join(BASE_DIR, 'models'))
 
 try:
     preprocessor = joblib.load(os.path.join(MODEL_DIR, 'rossmann_preprocessor.joblib'))
